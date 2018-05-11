@@ -20,6 +20,13 @@ compileJava {
     sourceCompatibility = targetCompatibility = '1.8'
 }
 
+jar {
+    classifier = 'universal'
+    manifest {
+        attributes 'FMLAT': 'parry_at.cfg'
+    }
+}
+
 minecraft {
     version = "1.12.2-14.23.3.2681"
     runDir = "run"

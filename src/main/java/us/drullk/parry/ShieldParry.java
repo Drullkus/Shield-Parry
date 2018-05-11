@@ -9,7 +9,6 @@ import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemShield;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
@@ -20,7 +19,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.enchanting.EnchantmentLevelSetEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -146,7 +144,7 @@ public class ShieldParry {
     }*/
 
     private static int applyTimerBonus(int base, ItemStack stack, float multiplier) {
-        LOGGER.info(base + base * getEnchantedLevel(stack) * multiplier);
+        //LOGGER.info(base + base * getEnchantedLevel(stack) * multiplier);
 
         return (int) (base + base * getEnchantedLevel(stack) * multiplier);
     }
