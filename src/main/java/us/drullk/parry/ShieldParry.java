@@ -1,5 +1,6 @@
 package us.drullk.parry;
 
+import java.util.Map;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnumEnchantmentType;
@@ -20,8 +21,13 @@ import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.NetworkCheckHandler;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -42,12 +48,24 @@ public class ShieldParry {
     private static final String enchantmentName = "parry";
     private static EnumEnchantmentType enchantmentTypeShield;
 
+    @NetworkCheckHandler
+    public static boolean checkNetwork(Map<String, String> mods, Side side) {
+        return !ModConfig.enableShieldEnchantment || mods.containsKey(MODID);
+    }
+
+    @Mod.EventHandler
+    public static void preInit(FMLPreInitializationEvent event) {
+        NetworkRegistry.INSTANCE.registry().get(Loader.instance().getIndexedModList().get(MODID)).testVanillaAcceptance();
+    }
+
     @SubscribeEvent
     public static void registerEnchantment(RegistryEvent.Register<Enchantment> event) {
         enchantmentTypeShield = EnumHelper.addEnchantmentType("shield", input -> input instanceof ItemShield || input != null && input.isShield(new ItemStack(input, 1, 0), null));
 
-        enchantment = new EnchantmentPrecision(Enchantment.Rarity.COMMON).setRegistryName(new ResourceLocation(MODID, enchantmentName)).setName(enchantmentName);
-        event.getRegistry().register(enchantment);
+        if (ModConfig.enableShieldEnchantment) {
+            enchantment = new EnchantmentPrecision(Enchantment.Rarity.COMMON).setRegistryName(new ResourceLocation(MODID, enchantmentName)).setName(enchantmentName);
+            event.getRegistry().register(enchantment);
+        }
     }
 
     @SubscribeEvent
@@ -193,6 +211,10 @@ public class ShieldParry {
         @Config.LangKey(config + "parry_window_arrow")
         @Config.RangeInt(min = 0)
         public static int shieldParryTicksArrow = 40;
+
+        @Config.LangKey(config + "parry_enchantment_enable")
+        public static boolean enableShieldEnchantment = true;
+
         @Config.LangKey(config + "parry_enchantment_bonus_arrow")
         @Config.RangeDouble(min = 0)
         public static float shieldEnchantmentMultiplierArrow =  0.25f;

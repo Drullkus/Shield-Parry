@@ -2,6 +2,8 @@ enchantment.parry=反弹
 
 parry.parry_window_arrow=箭矢反弹时间
 parry.parry_window_arrow.tooltip=以刻（tick）为单位，20 tick 为一秒。
+parry.parry_enchantment_enable=Enable Rebound Enchantment
+parry.parry_enchantment_enable.tooltip=Enables Rebound Enchantment
 parry.parry_enchantment_bonus_arrow=箭矢反弹时间增幅
 parry.parry_enchantment_bonus_arrow.tooltip=
 

@@ -2,6 +2,8 @@ enchantment.parry=Rebound
 
 parry.parry_window_arrow=Arrow Time Window
 parry.parry_window_arrow.tooltip=Measured in Ticks. 20 ticks are in one second.
+parry.parry_enchantment_enable=Enable Rebound Enchantment
+parry.parry_enchantment_enable.tooltip=Enables Rebound Enchantment
 parry.parry_enchantment_bonus_arrow=Arrow Time Window Bonus Multiplier
 parry.parry_enchantment_bonus_arrow.tooltip=
 
