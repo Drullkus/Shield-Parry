@@ -1,18 +1,16 @@
 package us.drullk.parry;
 
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.DamagingProjectileEntity;
-import net.minecraft.entity.projectile.FishingBobberEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tags.EntityTypeTags;
-import net.minecraft.tags.ITag;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
+import net.minecraft.world.entity.projectile.FishingHook;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -30,7 +28,7 @@ import java.util.function.BiConsumer;
 public class ShieldParry {
     public static final String MODID = "parry";
 
-    public static final ITag.INamedTag<EntityType<?>> BYPASSES = EntityTypeTags.bind(MODID + ":projectiles_parrying_disabled");
+    public static final Tag.Named<EntityType<?>> BYPASSES = EntityTypeTags.bind(MODID + ":projectiles_parrying_disabled");
 
     private static Logger LOGGER = LogManager.getLogger(ShieldParry.MODID);
 
@@ -40,7 +38,7 @@ public class ShieldParry {
         ParryConfig.INSTANCE = pairConfigSpec.getLeft();
     }
 
-    private static <T extends ProjectileEntity> boolean parryProjectile(T projectile, LivingEntity entityBlocking, boolean takeOwnership, BiConsumer<Vector3d, T> trajectoryChange) {
+    private static <T extends Projectile> boolean parryProjectile(T projectile, LivingEntity entityBlocking, boolean takeOwnership, BiConsumer<Vec3, T> trajectoryChange) {
         if (!ShieldParry.BYPASSES.contains(projectile.getType()) && entityBlocking.isBlocking() && entityBlocking.getUseItem().getUseDuration() - entityBlocking.getUseItemRemainingTicks() <= applyTimerBonus(ParryConfig.INSTANCE.shieldParryTicks.get(), entityBlocking.getUseItem(), ParryConfig.INSTANCE.shieldEnchantmentMultiplier.get())) {
             if (takeOwnership) {
                 projectile.setOwner(entityBlocking);
@@ -55,93 +53,24 @@ public class ShieldParry {
         return false;
     }
 
-    // FIXME Curse your lack of instanceof patterns, J8!
-    private static boolean dispatchShieldParry(Entity possibleProjectile, RayTraceResult rayTraceResult, boolean takeOwnership, BiConsumer<Vector3d, ProjectileEntity> trajectoryChange) {
-        if (possibleProjectile.level.isClientSide() || !(possibleProjectile instanceof ProjectileEntity) || !(rayTraceResult instanceof EntityRayTraceResult))
-            return false;
-
-        Entity entity = ((EntityRayTraceResult) rayTraceResult).getEntity();
-
-        return entity instanceof LivingEntity && parryProjectile((ProjectileEntity) possibleProjectile, (LivingEntity) entity, takeOwnership, trajectoryChange);
-    }
-
-    private static <T extends ProjectileEntity> boolean dispatchProjectileParry(T projectile, RayTraceResult rayTraceResult, boolean takeOwnership, BiConsumer<Vector3d, T> trajectoryChange) {
-        if (projectile.level.isClientSide() || !(rayTraceResult instanceof EntityRayTraceResult))
-            return false;
-
-        Entity entity = ((EntityRayTraceResult) rayTraceResult).getEntity();
-
-        return entity instanceof LivingEntity && parryProjectile(projectile, (LivingEntity) entity, takeOwnership, trajectoryChange);
+    private static boolean dispatchShieldParry(Projectile projectile, EntityHitResult entityHitResult, boolean takeOwnership, BiConsumer<Vec3, Projectile> trajectoryChange) {
+        return !projectile.level.isClientSide()
+                && entityHitResult.getEntity() instanceof LivingEntity livingEntity
+                && parryProjectile(projectile, livingEntity, takeOwnership, trajectoryChange);
     }
 
     @SubscribeEvent
     public static void parryThisCasual(ProjectileImpactEvent event) {
-        if (dispatchShieldParry(event.getEntity(), event.getRayTraceResult(), !(event.getEntity() instanceof FishingBobberEntity), (reboundAngle, projectile) -> {
-            projectile.shoot(reboundAngle.x, reboundAngle.y, reboundAngle.z, 1.1F, 0.1F);  // reflect faster and more accurately
+        if (event.getEntity() instanceof Projectile projectile && event.getRayTraceResult() instanceof EntityHitResult entityHitResult && dispatchShieldParry(projectile, entityHitResult, !(event.getEntity() instanceof FishingHook), (reboundAngle, rebounding) -> {
+            rebounding.shoot(reboundAngle.x, reboundAngle.y, reboundAngle.z, 1.1F, 0.1F);  // reflect faster and more accurately
 
-            if (projectile instanceof DamagingProjectileEntity) {
-                DamagingProjectileEntity damagingProjectile = (DamagingProjectileEntity) projectile;
-
+            if (rebounding instanceof AbstractHurtingProjectile damagingProjectile) {
                 damagingProjectile.xPower = reboundAngle.x * 0.1D;
                 damagingProjectile.yPower = reboundAngle.y * 0.1D;
                 damagingProjectile.zPower = reboundAngle.z * 0.1D;
             }
         })) event.setCanceled(true);
     }
-
-    @SubscribeEvent
-    public static void arrowParry(ProjectileImpactEvent.Arrow event) {
-        if (dispatchProjectileParry(event.getArrow(), event.getRayTraceResult(), true, (reboundAngle, projectile) -> {
-            projectile.shoot(reboundAngle.x, reboundAngle.y, reboundAngle.z, 1.1F, 0.1F);  // reflect faster and more accurately
-        }))
-            event.setCanceled(true);
-    }
-
-    @SubscribeEvent
-    public static void fireballParry(ProjectileImpactEvent.Fireball event) {
-        if (dispatchProjectileParry(event.getFireball(), event.getRayTraceResult(), true, (reboundAngle, projectile) -> {
-            projectile.shoot(reboundAngle.x, reboundAngle.y, reboundAngle.z, 1.1F, 0.1F);  // reflect faster and more accurately
-
-            projectile.xPower = reboundAngle.x * 0.1D;
-            projectile.yPower = reboundAngle.y * 0.1D;
-            projectile.zPower = reboundAngle.z * 0.1D;
-        }))
-            event.setCanceled(true);
-    }
-
-    @SubscribeEvent
-    public static void throwableParry(ProjectileImpactEvent.Throwable event) {
-        if (dispatchProjectileParry(event.getThrowable(), event.getRayTraceResult(), true, (reboundAngle, projectile) -> {
-            projectile.shoot(reboundAngle.x, reboundAngle.y, reboundAngle.z, 1.1F, 0.1F);  // reflect faster and more accurately
-        }))
-            event.setCanceled(true);
-    }
-
-    @SubscribeEvent
-    public static void fireworkParry(ProjectileImpactEvent.FireworkRocket event) {
-        if (dispatchProjectileParry(event.getFireworkRocket(), event.getRayTraceResult(), true, (reboundAngle, projectile) -> {
-            projectile.shoot(reboundAngle.x, reboundAngle.y, reboundAngle.z, 1.1F, 0.1F);  // reflect faster and more accurately
-        }))
-            event.setCanceled(true);
-    }
-
-    @SubscribeEvent
-    public static void fishhookParry(ProjectileImpactEvent.FishingBobber event) {
-        if (dispatchProjectileParry(event.getFishingBobber(), event.getRayTraceResult(), false, (reboundAngle, projectile) -> {
-            projectile.shoot(reboundAngle.x, reboundAngle.y, reboundAngle.z, 1.1F, 0.1F);  // reflect faster and more accurately
-        }))
-            event.setCanceled(true);
-    }
-
-    // TODO What was this even for???
-    /*@SubscribeEvent // Not feeling bothered writing a forge patch for another event related to an item's enchantability
-    public static void enchantShieldLevels(EnchantmentLevelSetEvent event) {
-        ItemStack stack = event.getItem();
-        Item item = stack.getItem();
-
-        if (item instanceof ItemShield || item.isShield(stack, null))
-            event.setLevel(1);
-    }*/
 
     private static int applyTimerBonus(int base, ItemStack stack, double multiplier) {
         //LOGGER.info(base + base * getEnchantedLevel(stack) * multiplier);

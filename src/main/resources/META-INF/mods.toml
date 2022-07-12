@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[36,)"
+loaderVersion="[37,)"
 license="LGPL"
 issueTrackerURL="https://github.com/Drullkus/Shield-Parry/issues"
 [[mods]]
@@ -10,10 +10,10 @@ modId="parry"
 version="${file.jarVersion}"
 displayName="Shield Parry"
 # A URL to query for updates for this mod. See the JSON update specification https://docs.minecraftforge.net/en/latest/misc/updatechecker/
-updateJSONURL="https://raw.githubusercontent.com/Drullkus/Shield-Parry/1.16.5/update.json"
+updateJSONURL="https://raw.githubusercontent.com/Drullkus/Shield-Parry/1.17.x/update.json"
 displayURL="https://www.curseforge.com/minecraft/mc-mods/parry"
 logoFile="parry.png"
-credits="Inspired by Breath of the Wild's parrying, and all of the parrying fanatics out there"
+credits="Inspired by Breath of the Wild's parrying and all of the parrying fanatics out there"
 authors="Drullkus"
 description='''
 Parry Projectiles with your shield!
@@ -23,12 +23,12 @@ Twilight Forest is awesome, you should play that mod too! :)
 [[dependencies.parry]]
     modId="forge"
     mandatory=true
-    versionRange="[36,)"
+    versionRange="[37,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.parry]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.5,1.17)"
+    versionRange="[1.17.1,1.18)"
     ordering="NONE"
     side="BOTH"
