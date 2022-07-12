@@ -1,0 +1,9 @@
+{
+  "homepage": "https://www.curseforge.com/minecraft/mc-mods/parry/files/all",
+  "1.16.5": {
+    "2.1": "• Mostly a direct 1.16.5 port!\n• Minor technical improvements under the hood.\n• Added `entity_type` tag list `parry:projectiles_parrying_disabled` for any modpackers wishing to disable parrying for select particles and allow normal shield behavior to happen instead."
+  },
+  "promos": {
+    "1.16.5-latest": "2.1"
+  }
+}
