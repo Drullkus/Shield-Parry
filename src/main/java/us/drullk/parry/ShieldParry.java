@@ -1,7 +1,8 @@
 package us.drullk.parry;
 
-import net.minecraft.tags.EntityTypeTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
@@ -18,8 +19,6 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.function.BiConsumer;
 
@@ -27,10 +26,8 @@ import java.util.function.BiConsumer;
 @Mod.EventBusSubscriber(modid = ShieldParry.MODID)
 public class ShieldParry {
     public static final String MODID = "parry";
-
-    public static final Tag.Named<EntityType<?>> BYPASSES = EntityTypeTags.bind(MODID + ":projectiles_parrying_disabled");
-
-    private static Logger LOGGER = LogManager.getLogger(ShieldParry.MODID);
+    public static final TagKey<EntityType<?>> PROJECTILES_DISABLED_FOR_PARRYING = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, ShieldParry.modId("projectiles_parrying_disabled"));
+    //private static Logger LOGGER = LogManager.getLogger(ShieldParry.MODID);
 
     public ShieldParry() {
         Pair<ParryConfig, ForgeConfigSpec> pairConfigSpec = new ForgeConfigSpec.Builder().configure(ParryConfig::new);
@@ -39,7 +36,7 @@ public class ShieldParry {
     }
 
     private static <T extends Projectile> boolean parryProjectile(T projectile, LivingEntity entityBlocking, boolean takeOwnership, BiConsumer<Vec3, T> trajectoryChange) {
-        if (!ShieldParry.BYPASSES.contains(projectile.getType()) && entityBlocking.isBlocking() && entityBlocking.getUseItem().getUseDuration() - entityBlocking.getUseItemRemainingTicks() <= applyTimerBonus(ParryConfig.INSTANCE.shieldParryTicks.get(), entityBlocking.getUseItem(), ParryConfig.INSTANCE.shieldEnchantmentMultiplier.get())) {
+        if (!projectile.getType().is(PROJECTILES_DISABLED_FOR_PARRYING) && entityBlocking.isBlocking() && entityBlocking.getUseItem().getUseDuration() - entityBlocking.getUseItemRemainingTicks() <= applyTimerBonus(ParryConfig.INSTANCE.shieldParryTicks.get(), entityBlocking.getUseItem(), ParryConfig.INSTANCE.shieldEnchantmentMultiplier.get())) {
             if (takeOwnership) {
                 projectile.setOwner(entityBlocking);
                 projectile.leftOwner = true;
@@ -76,5 +73,9 @@ public class ShieldParry {
         //LOGGER.info(base + base * getEnchantedLevel(stack) * multiplier);
 
         return (int) (base + base * EnchantmentHelper.getItemEnchantmentLevel(ParryEnchantment.reboundEnchantment, stack) * multiplier);
+    }
+
+    public static ResourceLocation modId(String name) {
+        return new ResourceLocation(MODID, name);
     }
 }

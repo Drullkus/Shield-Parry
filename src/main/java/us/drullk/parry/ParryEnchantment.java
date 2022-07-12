@@ -32,7 +32,7 @@ public class ParryEnchantment {
 
         @Override
         public boolean canApplyAtEnchantingTable(ItemStack stack) {
-            return stack.getItem() instanceof ShieldItem || stack.isShield(null);
+            return stack.getItem() instanceof ShieldItem || stack.canPerformAction(ToolActions.SHIELD_BLOCK);
         }
 
         @Override
@@ -42,7 +42,7 @@ public class ParryEnchantment {
 
         @Override
         public boolean isTreasureOnly() {
-            return true;
+            return ParryConfig.INSTANCE.treasureEnchantment.get();
         }
     }
 }

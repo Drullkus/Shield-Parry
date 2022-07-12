@@ -1,9 +1,10 @@
 {
   "homepage": "https://www.curseforge.com/minecraft/mc-mods/parry/files/all",
-  "1.17.1": {
-    "2.2": "• Mostly a direct 1.17.1 port!\n• Minor technical improvements under the hood.\n• Added `entity_type` tag list `parry:projectiles_parrying_disabled` for any modpackers wishing to disable parrying for select particles and allow normal shield behavior to happen instead."
+  "1.18.2": {
+    "2.3": "• Mostly a direct 1.18.2 port!\n• Minor technical improvements under the hood.\n• Added `entity_type` tag list `parry:projectiles_parrying_disabled` for any modpackers wishing to disable parrying for select projectiles and allow normal shield behavior to happen instead.\n• Made Rebound Enchantment obtainable on books in Enchanting Tables, added config option to force them to be treasure-only."
   },
   "promos": {
+    "1.18.2-latest": "2.3",
     "1.17.1-latest": "2.2",
     "1.16.5-latest": "2.1"
   }
