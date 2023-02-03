@@ -31,7 +31,7 @@ public class ParryEnchantment {
 
         @Override
         public boolean canApplyAtEnchantingTable(ItemStack stack) {
-            return stack.getItem() instanceof ShieldItem || stack.canPerformAction(ToolActions.SHIELD_BLOCK);
+            return (stack.getItem() instanceof ShieldItem || stack.canPerformAction(ToolActions.SHIELD_BLOCK)) && !stack.is(ShieldParry.EXCLUDED_SHIELDS);
         }
 
         @Override

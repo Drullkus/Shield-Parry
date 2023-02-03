@@ -8,6 +8,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.phys.EntityHitResult;
@@ -25,6 +26,7 @@ import org.apache.commons.lang3.tuple.Pair;
 public class ShieldParry {
     public static final String MODID = "parry";
     public static final TagKey<EntityType<?>> PROJECTILES_DISABLED_FOR_PARRYING = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, ShieldParry.modId("projectiles_parrying_disabled"));
+    public static final TagKey<Item> EXCLUDED_SHIELDS = TagKey.create(Registry.ITEM_REGISTRY, ShieldParry.modId("excluded_shields"));
 
     public ShieldParry() {
         Pair<ParryConfig, ForgeConfigSpec> pairConfigSpec = new ForgeConfigSpec.Builder().configure(ParryConfig::new);
@@ -33,23 +35,26 @@ public class ShieldParry {
     }
 
     private static <T extends Projectile> boolean parryProjectile(T projectile, LivingEntity entityBlocking, boolean takeOwnership) {
-        if (!projectile.getType().is(PROJECTILES_DISABLED_FOR_PARRYING) && entityBlocking.isBlocking() && entityBlocking.getUseItem().getUseDuration() - entityBlocking.getUseItemRemainingTicks() <= applyTimerBonus(ParryConfig.INSTANCE.shieldParryTicks.get(), entityBlocking.getUseItem(), ParryConfig.INSTANCE.shieldEnchantmentMultiplier.get())) {
-            if (takeOwnership) {
-                projectile.setOwner(entityBlocking);
-                projectile.leftOwner = true;
+        if (!projectile.getType().is(PROJECTILES_DISABLED_FOR_PARRYING) && entityBlocking.isBlocking()) {
+            ItemStack itemUsed = entityBlocking.getUseItem();
+            if (!itemUsed.is(EXCLUDED_SHIELDS) && itemUsed.getUseDuration() - entityBlocking.getUseItemRemainingTicks() <= applyTimerBonus(ParryConfig.INSTANCE.shieldParryTicks.get(), itemUsed, ParryConfig.INSTANCE.shieldEnchantmentMultiplier.get())) {
+                if (takeOwnership) {
+                    projectile.setOwner(entityBlocking);
+                    projectile.leftOwner = true;
+                }
+
+                Vec3 reboundAngle = entityBlocking.getLookAngle();
+
+                projectile.shoot(reboundAngle.x, reboundAngle.y, reboundAngle.z, 1.1F, 0.1F);  // reflect faster and more accurately
+
+                if (projectile instanceof AbstractHurtingProjectile damagingProjectile) {
+                    damagingProjectile.xPower = reboundAngle.x * 0.1D;
+                    damagingProjectile.yPower = reboundAngle.y * 0.1D;
+                    damagingProjectile.zPower = reboundAngle.z * 0.1D;
+                }
+
+                return true;
             }
-
-            Vec3 reboundAngle = entityBlocking.getLookAngle();
-
-            projectile.shoot(reboundAngle.x, reboundAngle.y, reboundAngle.z, 1.1F, 0.1F);  // reflect faster and more accurately
-
-            if (projectile instanceof AbstractHurtingProjectile damagingProjectile) {
-                damagingProjectile.xPower = reboundAngle.x * 0.1D;
-                damagingProjectile.yPower = reboundAngle.y * 0.1D;
-                damagingProjectile.zPower = reboundAngle.z * 0.1D;
-            }
-
-            return true;
         }
 
         return false;
