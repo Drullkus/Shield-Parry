@@ -1,10 +1,12 @@
 {
   "homepage": "https://www.curseforge.com/minecraft/mc-mods/parry/files/all",
   "1.19": {
+    "2.4.2": "• Port to 1.19.3\n• Fixed stack overflow potential for recursive collisions\n• Fixed reverse pickup state changes when owner is changed",
+    "2.4.1": "• Added item tag list `parry:excluded_shields`, to support disabling this mod's features to otherwise compatible shield items. Mods' Shield items implementing similar rebounding mechanics also should add their shields to this ban list.",
     "2.4": "• Mostly a direct 1.19 port!\n• Minor technical improvements under the hood.\n• Added `entity_type` tag list `parry:projectiles_parrying_disabled` for any modpackers wishing to disable parrying for select projectiles and allow normal shield behavior to happen instead.\n• Made Rebound Enchantment obtainable on books in Enchanting Tables, added config option to force them to be treasure-only."
   },
   "promos": {
-    "1.19-latest": "2.4",
+    "1.19-latest": "2.4.2",
     "1.18.2-latest": "2.3",
     "1.17.1-latest": "2.2",
     "1.16.5-latest": "2.1"
