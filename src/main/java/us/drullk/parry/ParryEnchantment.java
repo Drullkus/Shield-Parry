@@ -1,6 +1,6 @@
 package us.drullk.parry;
 
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
@@ -21,7 +21,7 @@ public class ParryEnchantment {
         enchantmentTypeShield = EnchantmentCategory.create("shield", input -> input instanceof ShieldItem || input != null && input.canPerformAction(new ItemStack(input, 1), ToolActions.SHIELD_BLOCK));
 
         reboundEnchantment = new EnchantmentRebound(Enchantment.Rarity.COMMON);
-        event.register(Registry.ENCHANTMENT_REGISTRY, ShieldParry.modId("rebound"), () -> reboundEnchantment);
+        event.register(Registries.ENCHANTMENT, ShieldParry.modId("rebound"), () -> reboundEnchantment);
     }
 
     private static class EnchantmentRebound extends Enchantment {

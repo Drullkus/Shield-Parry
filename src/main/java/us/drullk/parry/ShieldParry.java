@@ -1,6 +1,6 @@
 package us.drullk.parry;
 
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
@@ -26,8 +26,8 @@ import org.apache.commons.lang3.tuple.Pair;
 @Mod.EventBusSubscriber(modid = ShieldParry.MODID)
 public class ShieldParry {
     public static final String MODID = "parry";
-    public static final TagKey<EntityType<?>> PROJECTILES_DISABLED_FOR_PARRYING = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, ShieldParry.modId("projectiles_parrying_disabled"));
-    public static final TagKey<Item> EXCLUDED_SHIELDS = TagKey.create(Registry.ITEM_REGISTRY, ShieldParry.modId("excluded_shields"));
+    public static final TagKey<EntityType<?>> PROJECTILES_DISABLED_FOR_PARRYING = TagKey.create(Registries.ENTITY_TYPE, ShieldParry.modId("projectiles_parrying_disabled"));
+    public static final TagKey<Item> EXCLUDED_SHIELDS = TagKey.create(Registries.ITEM, ShieldParry.modId("excluded_shields"));
 
     public ShieldParry() {
         Pair<ParryConfig, ForgeConfigSpec> pairConfigSpec = new ForgeConfigSpec.Builder().configure(ParryConfig::new);
