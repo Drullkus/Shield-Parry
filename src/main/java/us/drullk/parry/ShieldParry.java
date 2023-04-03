@@ -73,6 +73,13 @@ public class ShieldParry {
             arrow.setOwner(entityBlocking);
             arrow.leftOwner = true;
 
+            // Forge's event for rebounding projectiles has an issue that causes the server-side to stall if piercing arrows are involved
+            // Though this is a reasonable long-term nerf anyway: Loss of 1 pierce level upon rebound
+            byte pierceLevel = arrow.getPierceLevel();
+            if (pierceLevel > 0) {
+                arrow.setPierceLevel((byte) (pierceLevel - 1));
+            }
+
             // Re-set the pre-fetched value
             arrow.pickup = priorPickupState;
         } else {
