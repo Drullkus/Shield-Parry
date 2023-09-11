@@ -90,7 +90,7 @@ public class ShieldParry {
 
     @SubscribeEvent
     public static void parryThisCasual(ProjectileImpactEvent event) {
-        if (!event.getEntity().getLevel().isClientSide()
+        if (!event.getEntity().level().isClientSide()
                 && event.getEntity() instanceof Projectile projectile
                 && event.getRayTraceResult() instanceof EntityHitResult entityHitResult
                 && entityHitResult.getEntity() instanceof LivingEntity livingEntity
