@@ -1,0 +1,34 @@
+{
+  "anvil_cost": 1,
+  "description": {
+    "translate": "enchantment.parry.rebound"
+  },
+  "max_cost": {
+    "base": 6,
+    "per_level_above_first": 7
+  },
+  "max_level": 5,
+  "min_cost": {
+    "base": 1,
+    "per_level_above_first": 7
+  },
+  "slots": [
+    "hand"
+  ],
+  "supported_items": {
+    "type": "neoforge:and",
+    "values": [
+      {
+        "type": "neoforge:or",
+        "values": [
+          "#c:tools/shield"
+        ]
+      },
+      {
+        "type": "neoforge:not",
+        "value": "#parry:excluded_shields"
+      }
+    ]
+  },
+  "weight": 10
+}

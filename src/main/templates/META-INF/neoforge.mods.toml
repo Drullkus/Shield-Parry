@@ -1,0 +1,32 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+issueTrackerURL="https://github.com/Drullkus/Shield-Parry/issues"
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+updateJSONURL="https://raw.githubusercontent.com/Drullkus/Shield-Parry/1.21.x/update.json"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/parry"
+logoFile="parry.png"
+credits="Inspired by Breath of the Wild's parrying and all of the parrying fanatics out there"
+authors="${mod_authors}"
+description='''${mod_description}'''
+#[[mixins]]
+#config="${mod_id}.mixins.json"
+[[accessTransformers]]
+file="META-INF/accesstransformer.cfg"
+
+[[dependencies.${mod_id}]]
+    modId="neoforge"
+    type="required"
+    versionRange="[${neo_version},)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="minecraft"
+    type="required"
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"
