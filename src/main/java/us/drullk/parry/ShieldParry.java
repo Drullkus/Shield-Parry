@@ -21,6 +21,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import org.apache.commons.lang3.tuple.Pair;
+import us.drullk.parry.data.ParryDatagen;
 
 import java.util.Optional;
 
