@@ -64,10 +64,6 @@ public class ShieldParry {
 
     @SuppressWarnings("OptionalIsPresent")
 	private static int getTimerBonus(RegistryAccess registryAccess, int base, ItemStack stack, double multiplier) {
-        //LOGGER.info(base + base * getEnchantedLevel(stack) * multiplier);
-
-        // TODO Switch to checking attribute
-
         Optional<Holder.Reference<Enchantment>> reboundEnchantment = registryAccess.registry(Registries.ENCHANTMENT).flatMap(r -> r.getHolder(ParryEnchantments.REBOUND));
 
         if (reboundEnchantment.isEmpty()) {
